@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Edit Entry{% endblock %}
+{% block content %}
+
+{% if job %}
+<a href="{{ url_for('detail', job_id=job.ID) }}" class="back-btn">‹ Detail</a>
+{% else %}
+<a href="{{ url_for('dashboard') }}" class="back-btn">‹ Dashboard</a>
+{% endif %}
+
+<div class="page-header">
+    <div class="page-title">Edit Entry</div>
+    {% if job %}<div class="page-subtitle">{{ job.ID }} · Created {{ job.Timestamp }}</div>{% endif %}
+</div>
+
+{% if error %}
+<div class="alert alert-error"><span class="alert-icon">⚠️</span>{{ error }}</div>
+{% endif %}
+
+{% if job %}
+<form action="{{ url_for('edit_job', job_id=job.ID) }}" method="POST" enctype="multipart/form-data">
+
+    <div class="section-header">Details</div>
+    <div class="form-card">
+        <div class="form-row">
+            <label for="category">Category</label>
+            <select name="category" id="category">
+                <option value="Software Request" {% if job.Category == 'Software Request' %}selected{% endif %}>Software Request</option>
+                <option value="Problem Log"      {% if job.Category == 'Problem Log' %}selected{% endif %}>Problem Log</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="status">Status</label>
+            <select name="status" id="status">
+                <option value="In Progress" {% if job.Status != 'Done' %}selected{% endif %}>In Progress</option>
+                <option value="Done"        {% if job.Status == 'Done' %}selected{% endif %}>Done</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required value="{{ job.Title }}">
+        </div>
+    </div>
+
+    <div class="section-header">Description</div>
+    <div class="form-card">
+        <div class="form-full">
+            <label for="description">Notes</label>
+            <textarea id="description" name="description" required>{{ job.Description }}</textarea>
+        </div>
+    </div>
+
+    <div class="section-header">Extras</div>
+    <div class="form-card">
+        {% if job.Attachment %}
+        <div class="form-full" style="border-bottom: 0.5px solid var(--sep);">
+            <label>Current Image</label>
+            <img src="{{ url_for('static', filename='uploads/' + job.Attachment) }}"
+                 alt="Current" style="max-height:72px; border-radius:8px; margin-bottom:6px;">
+        </div>
+        {% endif %}
+        <div class="form-full">
+            <label for="attachment">{{ 'Replace image' if job.Attachment else 'Image attachment' }} (optional)</label>
+            <input type="file" id="attachment" name="attachment" accept="image/*">
+        </div>
+        <div class="form-row">
+            <label for="link">Link</label>
+            <input type="text" id="link" name="link" value="{{ job.Link }}" placeholder="https://…">
+        </div>
+    </div>
+
+    <div style="margin-top:8px;">
+        <button type="submit" class="btn btn-primary btn-full">Save Changes</button>
+    </div>
+
+</form>
+{% endif %}
+{% endblock %}

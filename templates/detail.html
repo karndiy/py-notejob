@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}{{ job.Title if job else 'Detail' }}{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('dashboard') }}" class="back-btn">‹ Dashboard</a>
+
+{% if error %}
+<div class="alert alert-error"><span class="alert-icon">⚠️</span>{{ error }}</div>
+{% elif job %}
+
+<div class="card-padded" style="margin-bottom:16px;">
+    <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
+        <span class="badge {% if job.Category == 'Software Request' %}badge-request{% else %}badge-problem{% endif %}">
+            {{ job.Category }}
+        </span>
+        <span class="badge-status badge {% if job.Status == 'Pending' %}status-pending{% elif job.Status == 'In Progress' %}status-in-progress{% else %}status-done{% endif %}">
+            {{ job.Status }}
+        </span>
+        <span style="margin-left:auto; font-size:12px; color:var(--label3);">ID {{ job.ID }}</span>
+    </div>
+
+    <div style="font-size:22px; font-weight:700; letter-spacing:-0.3px; color:var(--label); margin-bottom:12px; line-height:1.3;">
+        {{ job.Title }}
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:3px;">
+        <div style="font-size:13px; color:var(--label2);">
+            <span style="color:var(--label3);">Created</span> &nbsp;{{ job.Timestamp }}
+        </div>
+        {% if job.Updated %}
+        <div style="font-size:13px; color:var(--label2);">
+            <span style="color:var(--label3);">Updated</span> &nbsp;{{ job.Updated }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="section-header">Description</div>
+<div class="detail-section">
+    <div class="detail-section-body">{{ job.Description }}</div>
+</div>
+
+{% if job.Attachment %}
+<div class="section-header">Attachment</div>
+<div class="detail-section">
+    <div style="padding:14px 16px;">
+        <img src="{{ url_for('static', filename='uploads/' + job.Attachment) }}"
+             alt="Attachment"
+             style="max-width:100%; max-height:360px; border-radius:10px; display:block;">
+    </div>
+</div>
+{% endif %}
+
+{% if job.Link %}
+<div class="section-header">Reference Link</div>
+<div class="detail-section">
+    <div style="padding:12px 16px;">
+        <a href="{{ job.Link }}" target="_blank" rel="noopener"
+           style="font-size:15px; color:var(--blue); word-break:break-all;">
+            {{ job.Link }}
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:20px;">
+    <a href="{{ url_for('edit_job', job_id=job.ID) }}" class="btn btn-primary">✏️ Edit Entry</a>
+    <a href="{{ job.obsidian_uri }}" class="btn" style="background:rgba(88,86,214,0.12);color:#5856D6;">💜 Obsidian</a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-gray">‹ Dashboard</a>
+</div>
+
+{% endif %}
+{% endblock %}

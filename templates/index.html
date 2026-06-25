@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Job Diary Log</h2>
+{% if not jobs %}
+    <p>No logged records found in Google Sheets.</p>
+{% else %}
+    {% for job in jobs %}
+        <div class="card">
+            <span class="badge {% if job.Category == 'Software Request' %}badge-request{% else %}badge-problem{% endif %}">
+                {{ job.Category }}
+            </span>
+            <span style="float: right; color: #777; font-size: 13px;">{{ job.Timestamp }}</span>
+            <h3 style="margin: 10px 0 5px 0;">[{{ job.ID }}] {{ job.Title }}</h3>
+            <p style="margin: 5px 0;">{{ job.Description }}</p>
+            <p style="margin: 5px 0 0 0; font-size: 14px;"><strong>Status:</strong> {{ job.Status }}</p>
+            {% if job.Attachment %}
+            <div style="margin-top: 10px;">
+                <img src="{{ url_for('static', filename='uploads/' + job.Attachment) }}" alt="Attachment" style="max-width: 100%; max-height: 200px; border-radius: 4px; border: 1px solid #ddd;">
+            </div>
+            {% endif %}
+            {% if job.Link %}
+            <p style="margin: 8px 0 0 0; font-size: 14px;">
+                <strong>Link:</strong> <a href="{{ job.Link }}" target="_blank" rel="noopener">{{ job.Link }}</a>
+            </p>
+            {% endif %}
+            <a href="{{ job.obsidian_uri }}" class="btn-obsidian">💜 Send to Obsidian Note</a>
+        </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

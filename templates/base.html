@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}Job Diary{% endblock %}</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --blue:    #007AFF;
+            --blue2:   #0062CC;
+            --green:   #34C759;
+            --red:     #FF3B30;
+            --orange:  #FF9500;
+            --purple:  #AF52DE;
+            --indigo:  #5856D6;
+            --teal:    #5AC8FA;
+
+            --bg:      #F2F2F7;
+            --card:    #FFFFFF;
+
+            --label:   #000000;
+            --label2:  rgba(60,60,67,0.60);
+            --label3:  rgba(60,60,67,0.30);
+
+            --fill:    rgba(120,120,128,0.20);
+            --fill2:   rgba(120,120,128,0.16);
+            --fill3:   rgba(120,120,128,0.08);
+
+            --sep:     rgba(60,60,67,0.12);
+
+            --r:    12px;
+            --r-lg: 16px;
+            --r-xl: 20px;
+            --nav-h: 52px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+        }
+
+        html { -webkit-text-size-adjust: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                         "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--label);
+            line-height: 1.5;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Navbar ─────────────────────────────────── */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-h);
+            background: rgba(242,242,247,0.88);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 0.5px solid var(--sep);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            gap: 16px;
+        }
+
+        .nav-logo {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--label);
+            text-decoration: none;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .nav-logo-icon {
+            width: 28px; height: 28px;
+            background: var(--blue);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2px;
+            margin-left: auto;
+        }
+
+        .nav-links a {
+            display: inline-block;
+            padding: 5px 13px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--label2);
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .nav-links a:hover       { background: var(--fill3); color: var(--blue); }
+        .nav-links a.active      { background: var(--fill2); color: var(--blue); font-weight: 600; }
+
+        .nav-links .btn-add      { background: var(--blue); color: #fff !important; font-weight: 600; }
+        .nav-links .btn-add:hover { background: var(--blue2); }
+
+        /* ── Layout ──────────────────────────────────── */
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: calc(var(--nav-h) + 24px) 16px 72px;
+        }
+
+        /* ── Alerts ──────────────────────────────────── */
+        .alert {
+            border-radius: var(--r);
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+        }
+
+        .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-success { background: rgba(52,199,89,0.12); color: #1A7431; }
+        .alert-error   { background: rgba(255,59,48,0.10); color: #C0392B; }
+
+        /* ── Page Header ─────────────────────────────── */
+        .page-header { margin-bottom: 24px; }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--label);
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .page-subtitle { font-size: 14px; color: var(--label2); }
+
+        /* ── Section header (iOS grouped) ────────────── */
+        .section-header {
+            font-size: 13px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--label2);
+            padding: 0 4px;
+            margin-bottom: 6px;
+        }
+
+        .section-footer {
+            font-size: 13px;
+            color: var(--label2);
+            padding: 6px 4px 0;
+        }
+
+        /* ── Card (iOS grouped cell container) ───────── */
+        .card {
+            background: var(--card);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .card-padded {
+            background: var(--card);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow);
+            padding: 18px 16px;
+            margin-bottom: 10px;
+        }
+
+        /* ── Hero ────────────────────────────────────── */
+        .hero {
+            background: linear-gradient(145deg, #007AFF 0%, #5856D6 100%);
+            border-radius: var(--r-xl);
+            padding: 26px 22px;
+            margin-bottom: 24px;
+            box-shadow: 0 6px 28px rgba(0,122,255,0.30);
+        }
+
+        .hero-eyebrow {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 6px;
+        }
+
+        .hero h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .hero p { font-size: 14px; color: rgba(255,255,255,0.80); margin-bottom: 20px; }
+
+        .hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .btn-hero-solid  { background: #fff; color: var(--blue) !important; font-weight: 700; }
+        .btn-hero-ghost  { background: rgba(255,255,255,0.18); color: #fff !important; border: 1px solid rgba(255,255,255,0.25); }
+        .btn-hero-ghost:hover { background: rgba(255,255,255,0.28); }
+
+        /* ── Stat Grid ───────────────────────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 560px) { .stats-grid { grid-template-columns: repeat(4,1fr); } }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow);
+            padding: 16px 14px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            cursor: default;
+        }
+
+        .stat-card:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
+
+        .stat-icon   { font-size: 20px; margin-bottom: 8px; }
+        .stat-number { font-size: 30px; font-weight: 700; letter-spacing: -0.8px; line-height: 1; margin-bottom: 4px; color: var(--blue); }
+        .stat-label  { font-size: 11px; font-weight: 600; color: var(--label2); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ── Badges ──────────────────────────────────── */
+        .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+
+        .badge-request { background: rgba(0,122,255,0.10); color: #007AFF; }
+        .badge-problem  { background: rgba(255,59,48,0.10); color: #FF3B30; }
+
+        .badge-status { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-pending     { background: rgba(255,149,0,0.12); color: #B86800; }
+        .status-in-progress { background: rgba(0,122,255,0.12); color: #007AFF; }
+        .status-done        { background: rgba(52,199,89,0.12); color: #248A3D; }
+
+        /* ── Buttons ─────────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.15s, transform 0.1s;
+            font-family: inherit;
+            gap: 5px;
+            -webkit-tap-highlight-color: transparent;
+            white-space: nowrap;
+        }
+
+        .btn:active { opacity: 0.72; transform: scale(0.97); }
+
+        .btn-primary { background: var(--blue); color: #fff; }
+        .btn-primary:hover { background: var(--blue2); }
+
+        .btn-tinted  { background: rgba(0,122,255,0.10); color: var(--blue); }
+        .btn-tinted:hover { background: rgba(0,122,255,0.17); }
+
+        .btn-gray    { background: var(--fill2); color: var(--label); }
+        .btn-gray:hover { background: var(--fill); }
+
+        .btn-green   { background: var(--green); color: #fff; }
+        .btn-red     { background: var(--red); color: #fff; }
+
+        .btn-sm  { padding: 5px 12px; font-size: 13px; border-radius: 8px; }
+        .btn-xs  { padding: 3px 9px;  font-size: 12px; border-radius: 7px; }
+        .btn-full{ width: 100%; padding: 14px; font-size: 16px; border-radius: 13px; }
+
+        /* ── List Row (iOS cell) ─────────────────────── */
+        .list-row {
+            display: flex;
+            align-items: center;
+            padding: 11px 16px;
+            border-bottom: 0.5px solid var(--sep);
+            gap: 12px;
+            transition: background 0.12s;
+        }
+
+        .list-row:last-child  { border-bottom: none; }
+        .list-row:hover       { background: var(--fill3); }
+        .list-row.clickable   { cursor: pointer; text-decoration: none; color: inherit; }
+
+        .list-row-icon {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .list-row-content   { flex: 1; min-width: 0; }
+        .list-row-title     { font-size: 15px; font-weight: 500; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-row-subtitle  { font-size: 13px; color: var(--label2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+        .list-row-right     { color: var(--label2); font-size: 14px; flex-shrink: 0; }
+        .list-row-chevron   { color: var(--label3); font-size: 12px; flex-shrink: 0; }
+
+        /* ── Job Card ────────────────────────────────── */
+        .job-card {
+            background: var(--card);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .job-card-body { padding: 14px 16px 10px; }
+
+        .job-card-meta {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 7px;
+        }
+
+        .job-card-time { margin-left: auto; font-size: 12px; color: var(--label3); white-space: nowrap; }
+
+        .job-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--label);
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .job-card-title-id { font-size: 13px; color: var(--label3); font-weight: 400; margin-right: 4px; }
+
+        .job-card-desc {
+            font-size: 14px;
+            color: var(--label2);
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            margin-bottom: 12px;
+        }
+
+        .job-card-actions {
+            display: flex;
+            gap: 7px;
+            padding: 10px 16px 12px;
+            background: var(--fill3);
+            border-top: 0.5px solid var(--sep);
+            flex-wrap: wrap;
+        }
+
+        /* ── Form (iOS grouped) ──────────────────────── */
+        .form-card {
+            background: var(--card);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: flex-start;
+            padding: 11px 16px;
+            border-bottom: 0.5px solid var(--sep);
+            gap: 12px;
+        }
+
+        .form-row:last-child { border-bottom: none; }
+
+        .form-row > label {
+            width: 110px;
+            min-width: 110px;
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--label);
+            padding-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .form-row input[type="text"],
+        .form-row input[type="url"],
+        .form-row select {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            color: var(--label2);
+            background: transparent;
+            font-family: inherit;
+            min-width: 0;
+            padding: 3px 0;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus { color: var(--blue); }
+
+        .form-full {
+            display: flex;
+            flex-direction: column;
+            padding: 11px 16px;
+            border-bottom: 0.5px solid var(--sep);
+        }
+
+        .form-full:last-child { border-bottom: none; }
+
+        .form-full > label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--label2);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 7px;
+        }
+
+        .form-full textarea,
+        .form-full input[type="file"] {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--label);
+        }
+
+        .form-full textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+
+        /* ── Detail Sections ─────────────────────────── */
+        .detail-section {
+            background: var(--card);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .detail-section-header {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--label2);
+            padding: 11px 16px 0;
+        }
+
+        .detail-section-body {
+            padding: 8px 16px 14px;
+            font-size: 15px;
+            color: var(--label);
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        /* ── Settings rows ───────────────────────────── */
+        .settings-row {
+            display: flex;
+            align-items: center;
+            padding: 11px 16px;
+            border-bottom: 0.5px solid var(--sep);
+            gap: 12px;
+        }
+
+        .settings-row:last-child { border-bottom: none; }
+
+        .settings-row label { font-size: 15px; color: var(--label); flex-shrink: 0; width: 140px; }
+
+        .settings-row input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 15px;
+            color: var(--blue);
+            text-align: right;
+            font-family: inherit;
+        }
+
+        .settings-row input:focus { color: var(--label); text-align: left; }
+
+        /* ── Back button ─────────────────────────────── */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--blue);
+            text-decoration: none;
+            margin-bottom: 16px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .back-btn:hover { opacity: 0.75; }
+
+        /* ── Footer ──────────────────────────────────── */
+        footer {
+            text-align: center;
+            padding: 24px 16px;
+            font-size: 12px;
+            color: var(--label3);
+        }
+
+        /* ── Responsive ──────────────────────────────── */
+        @media (max-width: 440px) {
+            .navbar      { padding: 0 14px; }
+            .nav-links a { padding: 5px 9px; font-size: 13px; }
+            .container   { padding-left: 12px; padding-right: 12px; }
+            .page-title  { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('home') }}" class="nav-logo">
+            <span class="nav-logo-icon">📋</span>
+            Job Diary
+        </a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}"      class="{{ 'active' if request.endpoint == 'home' else '' }}">Home</a></li>
+            <li><a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint in ['dashboard','detail','edit_job'] else '' }}">Dashboard</a></li>
+            <li><a href="{{ url_for('add_job') }}"   class="btn-add {{ 'active' if request.endpoint == 'add_job' else '' }}">+ Log</a></li>
+            <li><a href="{{ url_for('settings') }}"  class="{{ 'active' if request.endpoint == 'settings' else '' }}">Settings</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for cat, msg in messages %}
+            <div class="alert alert-{{ cat }}">
+                <span class="alert-icon">{{ '✅' if cat == 'success' else '⚠️' }}</span>
+                {{ msg }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>Job Diary &mdash; Flask &amp; Google Sheets</footer>
+</body>
+</html>

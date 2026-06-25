@@ -1,0 +1,10 @@
+# Normalize line endings to LF in the repo, CRLF on Windows checkout
+* text=auto eol=lf
+
+# Explicitly binary — no line ending conversion
+credentials.json binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary

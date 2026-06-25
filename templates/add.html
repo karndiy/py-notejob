@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}New Entry{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div class="page-title">New Entry</div>
+    <div class="page-subtitle">Status will be set to Pending</div>
+</div>
+
+{% if error %}
+<div class="alert alert-error"><span class="alert-icon">⚠️</span>{{ error }}</div>
+{% endif %}
+
+<form action="{{ url_for('add_job') }}" method="POST" enctype="multipart/form-data">
+
+    <div class="section-header">Details</div>
+    <div class="form-card">
+        <div class="form-row">
+            <label for="category">Category</label>
+            <select name="category" id="category">
+                <option value="Software Request">Software Request</option>
+                <option value="Problem Log">Problem Log</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required
+                   placeholder="Brief summary of the issue">
+        </div>
+    </div>
+
+    <div class="section-header">Description</div>
+    <div class="form-card">
+        <div class="form-full">
+            <label for="description">Notes</label>
+            <textarea id="description" name="description" required
+                      placeholder="Describe the issue, steps to reproduce, context…"></textarea>
+        </div>
+    </div>
+
+    <div class="section-header">Extras</div>
+    <div class="form-card">
+        <div class="form-full">
+            <label for="attachment">Image attachment (optional)</label>
+            <input type="file" id="attachment" name="attachment" accept="image/*">
+        </div>
+        <div class="form-row">
+            <label for="link">Link</label>
+            <input type="text" id="link" name="link" placeholder="https://… (optional)">
+        </div>
+    </div>
+
+    <div style="margin-top:8px;">
+        <button type="submit" class="btn btn-primary btn-full">Commit to Google Sheets</button>
+    </div>
+
+</form>
+{% endblock %}

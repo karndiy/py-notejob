@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div class="page-title">Settings</div>
+</div>
+
+{% if message %}
+<div class="alert alert-success"><span class="alert-icon">✅</span>{{ message }}</div>
+{% endif %}
+
+<form action="{{ url_for('settings') }}" method="POST">
+
+    <div class="section-header">Obsidian</div>
+    <div class="card" style="margin-bottom:4px;">
+        <div class="settings-row">
+            <label for="vault_name">Vault Name</label>
+            <input type="text" id="vault_name" name="vault_name"
+                   value="{{ config.vault_name }}" required>
+        </div>
+    </div>
+    <div class="section-footer">Must match your Obsidian vault name exactly — case-sensitive.</div>
+
+    <div class="section-header" style="margin-top:24px;">Google Sheets</div>
+    <div class="card" style="margin-bottom:4px;">
+        <div class="settings-row">
+            <label for="sheet_name">Spreadsheet</label>
+            <input type="text" id="sheet_name" name="sheet_name"
+                   value="{{ config.sheet_name }}" required>
+        </div>
+    </div>
+    <div class="section-footer">The exact name of your Google Spreadsheet.</div>
+
+    <div style="margin-top:28px;">
+        <button type="submit" class="btn btn-primary btn-full">Save Settings</button>
+    </div>
+
+</form>
+
+<div class="section-header" style="margin-top:32px;">About</div>
+<div class="card">
+    <div class="list-row">
+        <div class="list-row-content">
+            <div class="list-row-title">Job Diary</div>
+            <div class="list-row-subtitle">Flask + Google Sheets + Obsidian</div>
+        </div>
+        <span class="list-row-right" style="font-size:13px; color:var(--label3);">MVP</span>
+    </div>
+    <div class="list-row">
+        <div class="list-row-content">
+            <div class="list-row-title">Sheet Columns</div>
+            <div class="list-row-subtitle">ID · Timestamp · Category · Title · Description · Status · Attachment · Link · Updated</div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

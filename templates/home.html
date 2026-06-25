@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+{% if error %}
+<div class="alert alert-error"><span class="alert-icon">⚠️</span>{{ error }}</div>
+{% endif %}
+
+<div class="hero">
+    <div class="hero-eyebrow">Work Tracker</div>
+    <h1>Job Diary</h1>
+    <p>Track software requests and problem logs in one place.</p>
+    <div class="hero-actions">
+        <a href="{{ url_for('add_job') }}" class="btn btn-hero-solid">+ Log Entry</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-hero-ghost">Dashboard →</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-number">{{ stats.total or 0 }}</div>
+        <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-number" style="color: #B86800;">{{ stats.pending or 0 }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🔵</div>
+        <div class="stat-number" style="color: #007AFF;">{{ stats.software or 0 }}</div>
+        <div class="stat-label">Requests</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🔴</div>
+        <div class="stat-number" style="color: #FF3B30;">{{ stats.problems or 0 }}</div>
+        <div class="stat-label">Problems</div>
+    </div>
+</div>
+
+{% if recent %}
+<div class="section-header">Recent</div>
+<div class="card">
+    {% for job in recent %}
+    <a href="{{ url_for('detail', job_id=job.ID) }}" class="list-row clickable" style="text-decoration:none;">
+        <div class="list-row-icon" style="background: {{ 'rgba(0,122,255,0.12)' if job.Category == 'Software Request' else 'rgba(255,59,48,0.10)' }};">
+            {{ '💻' if job.Category == 'Software Request' else '🔴' }}
+        </div>
+        <div class="list-row-content">
+            <div class="list-row-title">[{{ job.ID }}] {{ job.Title }}</div>
+            <div class="list-row-subtitle">{{ job.Description }}</div>
+        </div>
+        <span class="badge-status badge {% if job.Status == 'Pending' %}status-pending{% elif job.Status == 'In Progress' %}status-in-progress{% else %}status-done{% endif %}">
+            {{ job.Status }}
+        </span>
+        <span class="list-row-chevron">›</span>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+{% if not error %}
+<div class="card-padded" style="text-align:center; color:var(--label2); padding: 40px 20px;">
+    <div style="font-size:36px; margin-bottom:10px;">📭</div>
+    <p style="font-size:15px;">No entries yet.<br><a href="{{ url_for('add_job') }}" style="color:var(--blue);">Log your first entry</a></p>
+</div>
+{% endif %}
+{% endif %}
+
+{% endblock %}

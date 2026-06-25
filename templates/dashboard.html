@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <div class="page-title">Dashboard</div>
+    <div class="page-subtitle">{{ jobs | length }} entr{{ 'y' if jobs | length == 1 else 'ies' }} — most recent first</div>
+</div>
+
+{% if error %}
+<div class="alert alert-error"><span class="alert-icon">⚠️</span>{{ error }}</div>
+{% endif %}
+
+{% if not jobs %}
+<div class="card-padded" style="text-align:center; color:var(--label2); padding:48px 20px;">
+    <div style="font-size:38px; margin-bottom:12px;">📭</div>
+    <p style="font-size:15px; margin-bottom:4px; font-weight:500; color:var(--label);">No entries yet</p>
+    <p style="font-size:14px;"><a href="{{ url_for('add_job') }}" style="color:var(--blue);">Log your first entry →</a></p>
+</div>
+{% else %}
+{% for job in jobs %}
+<div class="job-card">
+    <div class="job-card-body">
+        <div class="job-card-meta">
+            <span class="badge {% if job.Category == 'Software Request' %}badge-request{% else %}badge-problem{% endif %}">
+                {{ job.Category }}
+            </span>
+            <span class="badge-status badge {% if job.Status == 'Pending' %}status-pending{% elif job.Status == 'In Progress' %}status-in-progress{% else %}status-done{% endif %}">
+                {{ job.Status }}
+            </span>
+            <span class="job-card-time">
+                {% if job.Updated %}Updated {{ job.Updated }}{% else %}{{ job.Timestamp }}{% endif %}
+            </span>
+        </div>
+        <div class="job-card-title">
+            <span class="job-card-title-id">[{{ job.ID }}]</span>{{ job.Title }}
+        </div>
+        <div class="job-card-desc">{{ job.Description }}</div>
+    </div>
+    <div class="job-card-actions">
+        <a href="{{ url_for('detail', job_id=job.ID) }}"   class="btn btn-gray btn-sm">View Detail</a>
+        <a href="{{ url_for('edit_job', job_id=job.ID) }}" class="btn btn-tinted btn-sm">✏️ Edit</a>
+        <a href="{{ job.obsidian_uri }}"                    class="btn btn-sm" style="background:rgba(88,86,214,0.10);color:#5856D6;">💜 Obsidian</a>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% endblock %}
